@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.dto.Student;
+import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,9 @@ public class ExcelController {
 
     @Autowired
     private ExcelDataService excelDataService;
+
+    @Autowired
+    private StudentService studentService;
 
     @GetMapping("/extractDataAndInsert")
     public ExtractedDataDTO extractDataAndInsert() {
@@ -49,6 +54,36 @@ public class ExcelController {
         System.out.println("BOOK: " + dto.getBook_name());
         System.out.println("AUTHOR: " + dto.getAuthor_name());
         System.out.println("CID with quotes: " + dto.getCo_id_with_quotes());
+
+        ///////////////////////////////////
+        Student student = new Student();
+
+        List<String> studentName = extractedData.get("Column 5");
+        List<String> studentAge = extractedData.get("Column 6");
+        List<String> studentGrade = extractedData.get("Column 7");
+        List<String> studentAddress = extractedData.get("Column 8");
+
+        // Insert data into H2 database
+        for (int i = 0; i < co_id.size(); i++) {
+            Student data = new Student();
+            data.setStudentName(studentName.get(i));
+            data.setStudentAge(studentAge.get(i));
+            data.setStudentGrade(studentGrade.get(i));
+            data.setStudentAddress(studentAddress.get(i));
+            studentService.save(data);
+        }
+
+        student.setStudentName(String.join(", ", studentName));
+        student.setStudentAge(String.join(", ", studentAge));
+        student.setStudentGrade(String.join(", ", studentGrade));
+        student.setStudentAddress(String.join(", ", studentAddress));
+//        dto.setCo_id_with_quotes(co_id.stream().map(value -> "'" + value + "'").collect(Collectors.joining(", ")));
+
+        System.out.println("NAME: " + dto.getCo_id());
+        System.out.println("AGE: " + dto.getPhone());
+        System.out.println("GRADE: " + dto.getBook_name());
+        System.out.println("ADDRESS: " + dto.getAuthor_name());
+//        System.out.println("CID with quotes: " + dto.getCo_id_with_quotes());
 
         return dto;
     }
