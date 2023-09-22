@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +57,8 @@ public class ExcelController {
             data.setBook_name("'" + book_name.get(i) + "'");
             data.setAuthor_name("'" + author_name.get(i) + "'");
             data.setMobile(mobileList);
+            data.setInsertionTime(new Date());
+
             excelDataService.save(data);
         }
 

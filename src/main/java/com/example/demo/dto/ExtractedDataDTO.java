@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,11 +33,10 @@ public class ExtractedDataDTO {
     @ElementCollection
     private List<Integer> mobile;
 
-//    public void setCo_idList(List<Integer> coIdList) {
-//    }
-    public void setCo_id(Integer co_id) {
-        this.co_id = co_id;
-    }
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "insertion_time")
+    private Date insertionTime;
 
     public void setCo_idList(List<Integer> coIdList) {
     }
