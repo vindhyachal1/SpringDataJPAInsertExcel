@@ -1,6 +1,9 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.service.ExcelDataService;
+import com.example.demo.dto.ExtractedDataDTO;
 import com.example.demo.dto.Student;
+import com.example.demo.reader.ExcelDataReaderService;
 import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,10 +39,10 @@ public class ExcelController {
         // Insert data into H2 database
         for (int i = 0; i < co_id.size(); i++) {
             ExtractedDataDTO data = new ExtractedDataDTO();
-            data.setCo_id(co_id.get(i));
-            data.setPhone(phone_id.get(i));
-            data.setBook_name(book_name.get(i));
-            data.setAuthor_name(author_name.get(i));
+            data.setCo_id("'" + co_id.get(i) + "'"); // Wrap with single quotes
+            data.setPhone("'" + phone_id.get(i) + "'"); // Wrap with single quotes
+            data.setBook_name("'" + book_name.get(i) + "'");
+            data.setAuthor_name("'" + author_name.get(i) + "'");
             excelDataService.save(data);
         }
 

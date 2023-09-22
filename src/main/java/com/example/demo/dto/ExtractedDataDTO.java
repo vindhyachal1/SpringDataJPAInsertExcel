@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.dto;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
