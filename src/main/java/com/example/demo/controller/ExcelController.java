@@ -31,7 +31,6 @@ public class ExcelController {
     @GetMapping("/extractDataAndInsert")
     public ExtractedDataDTO extractDataAndInsert() {
         Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel("src/main/resources/books.xlsx");
-        ExtractedDataDTO dto = new ExtractedDataDTO();
 
         List<String> co_idStrings = extractedData.get("Column 1");
         List<String> phone_id = extractedData.get("Column 2");
@@ -46,27 +45,31 @@ public class ExcelController {
 
         // Convert mobileStrings to a list of integers
         List<Integer> mobileList = mobileStrings.stream()
-                .flatMap(str -> {
-                    String[] numbers = str.split(", ");
-                    return Arrays.stream(numbers);
-                })
+                .flatMap(str -> Arrays.stream(str.split(", ")))
                 .map(String::trim)
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
 
-        // Insert data into H2 database for ExtractedDataDTO
-        for (int i = 0; i < co_idList.size(); i++) {
+        // Create a list to store ExtractedDataDTO objects
+        List<ExtractedDataDTO> dataList = co_idList.stream().map(co_id -> {
             ExtractedDataDTO data = new ExtractedDataDTO();
-            data.setCo_id(co_idList.get(i));
-            data.setPhone("'" + phone_id.get(i) + "'");
-            data.setBook_name("'" + book_name.get(i) + "'");
-            data.setAuthor_name("'" + author_name.get(i) + "'");
+            int index = co_idList.indexOf(co_id);
+
+            data.setCo_id(co_id);
+            data.setPhone("'" + phone_id.get(index) + "'");
+            data.setBook_name("'" + book_name.get(index) + "'");
+            data.setAuthor_name("'" + author_name.get(index) + "'");
             data.setMobile(mobileList);
             data.setInsertionTime(new Date());
 
-            excelDataService.save(data);
-        }
+            return data;
+        }).collect(Collectors.toList());
 
+        // Insert data into H2 database for ExtractedDataDTO in the same sequence
+        dataList.forEach(excelDataService::save);
+
+        // Create a response DTO
+        ExtractedDataDTO dto = new ExtractedDataDTO();
         dto.setCo_idList(co_idList);
         dto.setPhone(String.join(", ", phone_id));
         dto.setBook_name(String.join(", ", book_name));
@@ -82,17 +85,18 @@ public class ExcelController {
         ///////////////////////////////////
         Student student = new Student();
 
-        List<String> cidStrings = extractedData.get("Column 1");
+        List<String> cid = extractedData.get("Column 1");
         List<String> studentName = extractedData.get("Column 5");
         List<String> studentAge = extractedData.get("Column 6");
         List<String> studentGrade = extractedData.get("Column 7");
         List<String> studentAddress = extractedData.get("Column 8");
 
-        List<Integer> idList = cidStrings.stream()
+        List<Integer> cidList = cid.stream()
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());
 
-        for (int i = 0; i < idList.size(); i++) {
+        // Insert data into H2 database
+        for (int i = 0; i < cidList.size(); i++) {
             Student data = new Student();
             data.setStudentName(studentName.get(i));
             data.setStudentAge(studentAge.get(i));
