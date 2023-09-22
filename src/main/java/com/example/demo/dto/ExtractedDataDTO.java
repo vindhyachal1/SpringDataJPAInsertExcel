@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter; // Import Lombok's Getter and Setter annotations
 
 @Entity
 @Data
@@ -11,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ExtractedDataDTO {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String co_id;
 
     @Column(columnDefinition = "VARCHAR(255)")
@@ -25,4 +26,8 @@ public class ExtractedDataDTO {
 
     @Column(columnDefinition = "VARCHAR(255)")
     private String phone;
+
+    @Column // Add a column for the new field
+    private Integer mobile;
 }
+

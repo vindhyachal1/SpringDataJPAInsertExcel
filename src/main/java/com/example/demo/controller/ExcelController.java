@@ -1,9 +1,9 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.ExcelDataService;
 import com.example.demo.dto.ExtractedDataDTO;
 import com.example.demo.dto.Student;
 import com.example.demo.reader.ExcelDataReaderService;
+import com.example.demo.service.ExcelDataService;
 import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,14 +35,16 @@ public class ExcelController {
         List<String> phone_id = extractedData.get("Column 2");
         List<String> book_name = extractedData.get("Column 3");
         List<String> author_name = extractedData.get("Column 4");
+        List<String> mobile = extractedData.get("Column 9"); // Assuming mobile data is in Column 9
 
-        // Insert data into H2 database
+        // Insert data into H2 database for ExtractedDataDTO
         for (int i = 0; i < co_id.size(); i++) {
             ExtractedDataDTO data = new ExtractedDataDTO();
-            data.setCo_id("'" + co_id.get(i) + "'"); // Wrap with single quotes
-            data.setPhone("'" + phone_id.get(i) + "'"); // Wrap with single quotes
+            data.setCo_id("'" + co_id.get(i) + "'");
+            data.setPhone("'" + phone_id.get(i) + "'");
             data.setBook_name("'" + book_name.get(i) + "'");
             data.setAuthor_name("'" + author_name.get(i) + "'");
+            data.setMobile(Integer.parseInt(mobile.get(i))); // Parse and set the mobile field
             excelDataService.save(data);
         }
 
@@ -56,7 +58,7 @@ public class ExcelController {
         System.out.println("PHONE: " + dto.getPhone());
         System.out.println("BOOK: " + dto.getBook_name());
         System.out.println("AUTHOR: " + dto.getAuthor_name());
-        System.out.println("CID with quotes: " + dto.getCo_id_with_quotes());
+        System.out.println("MOBILE: " + mobile); // Mobile data
 
         ///////////////////////////////////
         Student student = new Student();
@@ -66,8 +68,8 @@ public class ExcelController {
         List<String> studentGrade = extractedData.get("Column 7");
         List<String> studentAddress = extractedData.get("Column 8");
 
-        // Insert data into H2 database
-        for (int i = 0; i < co_id.size(); i++) {
+        // Insert data into H2 database for Student
+        for (int i = 0; i < studentName.size(); i++) {
             Student data = new Student();
             data.setStudentName(studentName.get(i));
             data.setStudentAge(studentAge.get(i));
@@ -80,13 +82,11 @@ public class ExcelController {
         student.setStudentAge(String.join(", ", studentAge));
         student.setStudentGrade(String.join(", ", studentGrade));
         student.setStudentAddress(String.join(", ", studentAddress));
-//        dto.setCo_id_with_quotes(co_id.stream().map(value -> "'" + value + "'").collect(Collectors.joining(", ")));
 
-        System.out.println("NAME: " + dto.getCo_id());
-        System.out.println("AGE: " + dto.getPhone());
-        System.out.println("GRADE: " + dto.getBook_name());
-        System.out.println("ADDRESS: " + dto.getAuthor_name());
-//        System.out.println("CID with quotes: " + dto.getCo_id_with_quotes());
+        System.out.println("NAME: " + student.getStudentName());
+        System.out.println("AGE: " + student.getStudentAge());
+        System.out.println("GRADE: " + student.getStudentGrade());
+        System.out.println("ADDRESS: " + student.getStudentAddress());
 
         return dto;
     }
