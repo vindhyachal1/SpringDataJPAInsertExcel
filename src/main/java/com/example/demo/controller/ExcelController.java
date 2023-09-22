@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ExtractedDataDTO;
+import com.example.demo.dto.Student;
 import com.example.demo.reader.ExcelDataReaderService;
 import com.example.demo.service.ExcelDataService;
+import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,9 @@ public class ExcelController {
     @Autowired
     private ExcelDataService excelDataService;
 
+    @Autowired
+    private StudentService studentService;
+
     @GetMapping("/extractDataAndInsert")
     public ExtractedDataDTO extractDataAndInsert() {
         Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel("src/main/resources/books.xlsx");
@@ -32,7 +37,7 @@ public class ExcelController {
         List<String> phone_id = extractedData.get("Column 2");
         List<String> book_name = extractedData.get("Column 3");
         List<String> author_name = extractedData.get("Column 4");
-        List<String> mobileStrings = extractedData.get("Column 9"); // Assuming mobile data is in Column 9
+        List<String> mobileStrings = extractedData.get("Column 9");
 
         // Convert co_idStrings to a list of integers
         List<Integer> co_idList = co_idStrings.stream()
@@ -62,7 +67,7 @@ public class ExcelController {
             excelDataService.save(data);
         }
 
-        dto.setCo_idList(co_idList); // Assuming you have a setter method for co_id in ExtractedDataDTO
+        dto.setCo_idList(co_idList);
         dto.setPhone(String.join(", ", phone_id));
         dto.setBook_name(String.join(", ", book_name));
         dto.setAuthor_name(String.join(", ", author_name));
@@ -73,6 +78,38 @@ public class ExcelController {
         System.out.println("BOOK: " + dto.getBook_name());
         System.out.println("AUTHOR: " + dto.getAuthor_name());
         System.out.println("MOBILE: " + dto.getMobile());
+
+        ///////////////////////////////////
+        Student student = new Student();
+
+        List<String> cidStrings = extractedData.get("Column 1");
+        List<String> studentName = extractedData.get("Column 5");
+        List<String> studentAge = extractedData.get("Column 6");
+        List<String> studentGrade = extractedData.get("Column 7");
+        List<String> studentAddress = extractedData.get("Column 8");
+
+        List<Integer> idList = cidStrings.stream()
+                .map(Integer::valueOf)
+                .collect(Collectors.toList());
+
+        for (int i = 0; i < idList.size(); i++) {
+            Student data = new Student();
+            data.setStudentName(studentName.get(i));
+            data.setStudentAge(studentAge.get(i));
+            data.setStudentGrade(studentGrade.get(i));
+            data.setStudentAddress(studentAddress.get(i));
+            studentService.save(data);
+        }
+
+        student.setStudentName(String.join(", ", studentName));
+        student.setStudentAge(String.join(", ", studentAge));
+        student.setStudentGrade(String.join(", ", studentGrade));
+        student.setStudentAddress(String.join(", ", studentAddress));
+
+        System.out.println("NAME: " + dto.getCo_id());
+        System.out.println("AGE: " + dto.getPhone());
+        System.out.println("GRADE: " + dto.getBook_name());
+        System.out.println("ADDRESS: " + dto.getAuthor_name());
 
         return dto;
     }
