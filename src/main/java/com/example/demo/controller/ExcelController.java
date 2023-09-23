@@ -6,6 +6,7 @@ import com.example.demo.reader.ExcelDataReaderService;
 import com.example.demo.service.ExcelDataService;
 import com.example.demo.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,8 +25,10 @@ public class ExcelController {
     private ExcelDataService excelDataService;
     @Autowired
     private StudentService studentService;
-    @GetMapping("/extractDataAndInsert")
-    public ExtractedDataDTO extractDataAndInsert() {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    @GetMapping("/iterate")
+    public String extractDataAndInsert() {
         Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel("src/main/resources/books.xlsx");
 
         List<String> co_idStrings = extractedData.get("Column 1");
@@ -34,44 +37,32 @@ public class ExcelController {
         List<String> author_name = extractedData.get("Column 4");
         List<String> mobileStrings = extractedData.get("Column 9");
 
-        List<Integer> co_idList = co_idStrings.stream()
-                .map(Integer::valueOf)
-                .collect(Collectors.toList());
+        StringBuilder result = new StringBuilder();
 
-        List<Integer> mobileList = mobileStrings.stream()
-                .flatMap(str -> Arrays.stream(str.split(", ")))
-                .map(String::trim)
-                .map(Integer::valueOf)
-                .collect(Collectors.toList());
+        for (int i = 0; i < co_idStrings.size(); i++) {
+            String coId = co_idStrings.get(i);
+            String phoneId = phone_id.get(i);
+            String bookName = book_name.get(i);
+            String authorName = author_name.get(i);
+            String mobileString = mobileStrings.get(i);
 
-        List<ExtractedDataDTO> dataList = co_idList.stream().map(co_id -> {
-            ExtractedDataDTO data = new ExtractedDataDTO();
-            int index = co_idList.indexOf(co_id);
+            String formattedData = String.format("(%s, %s, %s, %s, %s)", coId, phoneId, bookName, authorName, mobileString);
+            System.out.println(formattedData);
 
-            data.setCo_id(co_id);
-            data.setPhone("'" + phone_id.get(index) + "'");
-            data.setBook_name("'" + book_name.get(index) + "'");
-            data.setAuthor_name("'" + author_name.get(index) + "'");
-            data.setMobile(mobileList);
-            data.setInsertionTime(new Date());
+            // Insert data into the database
+            jdbcTemplate.update("INSERT INTO data (co_id, phone_id, book_name, author_name, mobile_string) VALUES (?, ?, ?, ?, ?)",
+                    coId, phoneId, bookName, authorName, mobileString);
 
-            return data;
-        }).collect(Collectors.toList());
-        dataList.forEach(excelDataService::save);
+//            result.append("Row ").append(i + 1).append(": ");
+//            result.append("CO_ID=").append(coId).append(", ");
+//            result.append("PHONE=").append(phoneId).append(", ");
+//            result.append("BOOK_NAME=").append(bookName).append(", ");
+//            result.append("AUTHOR_NAME=").append(authorName).append(", ");
+//            result.append("MOBILE=").append(mobileString).append("\n");
+        }
 
-        ExtractedDataDTO dto = new ExtractedDataDTO();
-        dto.setCo_idList(co_idList);
-        dto.setPhone(String.join(", ", phone_id));
-        dto.setBook_name(String.join(", ", book_name));
-        dto.setAuthor_name(String.join(", ", author_name));
-        dto.setMobile(mobileList);
+//        System.out.println(result.toString());
 
-        System.out.println("CID: " + dto.getCo_id());
-        System.out.println("PHONE: " + dto.getPhone());
-        System.out.println("BOOK: " + dto.getBook_name());
-        System.out.println("AUTHOR: " + dto.getAuthor_name());
-        System.out.println("MOBILE: " + dto.getMobile());
-
-        return dto;
+        return result.toString();
     }
 }
