@@ -49,30 +49,14 @@ public class ExcelController {
             String authorName = author_name.get(i);
             String mobileString = mobileStrings.get(i);
 
-            // Get the current timestamp in CST (Central Standard Time) format
             Timestamp cstDate = new Timestamp(System.currentTimeMillis());
 
-            // Construct the SQL query with values
             String sqlQuery = String.format(
                     "INSERT INTO data (co_id, phone_id, book_name, author_name, mobile_string, cst_date) VALUES (%s, %s, '%s', '%s', %s, '%s');",
                     coId, phoneId, bookName, authorName, mobileString, cstDate);
-
-            // Print the SQL query to the console
-            System.out.println("SQL Query: " + sqlQuery);
-
-            // Execute the SQL query
+            System.out.println(sqlQuery);
             jdbcTemplate.update(sqlQuery);
-
-            // Build a result string (if needed)
-            result.append("Row ").append(i + 1).append(": ");
-            result.append("CO_ID=").append(coId).append(", ");
-            result.append("PHONE=").append(phoneId).append(", ");
-            result.append("BOOK_NAME=").append(bookName).append(", ");
-            result.append("AUTHOR_NAME=").append(authorName).append(", ");
-            result.append("MOBILE=").append(mobileString).append("\n");
         }
-
-        // You can return the result string if needed
         return result.toString();
     }
 
