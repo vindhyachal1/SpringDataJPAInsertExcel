@@ -42,9 +42,6 @@ public class ExcelController {
 
         StringBuilder result = new StringBuilder();
 
-        // Modify your SQL query to use placeholders (?)
-        String sqlQuery = "INSERT INTO data (co_id, phone_id, book_name, author_name, mobile_string, cst_date) VALUES (?, ?, ?, ?, ?, ?)";
-
         for (int i = 0; i < co_idStrings.size(); i++) {
             String coId = co_idStrings.get(i);
             String phoneId = phone_id.get(i);
@@ -55,8 +52,16 @@ public class ExcelController {
             // Get the current timestamp in CST (Central Standard Time) format
             Timestamp cstDate = new Timestamp(System.currentTimeMillis());
 
-            // Provide values for the placeholders in the update method
-            jdbcTemplate.update(sqlQuery, coId, phoneId, bookName, authorName, mobileString, cstDate);
+            // Construct the SQL query with values
+            String sqlQuery = String.format(
+                    "INSERT INTO data (co_id, phone_id, book_name, author_name, mobile_string, cst_date) VALUES (%s, %s, '%s', '%s', %s, '%s');",
+                    coId, phoneId, bookName, authorName, mobileString, cstDate);
+
+            // Print the SQL query to the console
+            System.out.println("SQL Query: " + sqlQuery);
+
+            // Execute the SQL query
+            jdbcTemplate.update(sqlQuery);
 
             // Build a result string (if needed)
             result.append("Row ").append(i + 1).append(": ");
@@ -70,4 +75,5 @@ public class ExcelController {
         // You can return the result string if needed
         return result.toString();
     }
+
 }
