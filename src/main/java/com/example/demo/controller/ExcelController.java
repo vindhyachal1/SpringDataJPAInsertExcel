@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.reader.ExcelDataReaderService;
-import com.example.demo.service.ExcelDataExtractorService;
+//import com.example.demo.service.ExcelDataExtractorService;
 import com.example.demo.service.ExcelDataProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,8 +18,8 @@ import java.util.Map;
 public class ExcelController {
     @Autowired
     private ExcelDataReaderService excelDataReaderService;
-    @Autowired
-    private ExcelDataExtractorService excelDataExtractorService;
+//    @Autowired
+//    private ExcelDataExtractorService excelDataExtractorService;
     @Autowired
     private ExcelDataProcessorService excelDataProcessorService;
     @Autowired
@@ -29,7 +29,7 @@ public class ExcelController {
     public String extractDataAndInsert() {
         Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel("src/main/resources/books.xlsx");
 
-        for (int i = 0; i < excelDataExtractorService.extractColumn1(extractedData).size(); i++) {
+        for (int i = 0; i < extractedData.get("Column 1").size(); i++) {
             Map<String, String> excelData = excelDataProcessorService.extractData(extractedData, i);
             Timestamp cstDate = new Timestamp(System.currentTimeMillis());
             String sqlQuery = String.format(
