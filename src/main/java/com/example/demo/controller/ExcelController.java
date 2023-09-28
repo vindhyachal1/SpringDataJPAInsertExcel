@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.reader.ExcelDataReaderService;
-//import com.example.demo.service.ExcelDataExtractorService;
 import com.example.demo.service.ExcelDataProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,8 +17,6 @@ import java.util.Map;
 public class ExcelController {
     @Autowired
     private ExcelDataReaderService excelDataReaderService;
-//    @Autowired
-//    private ExcelDataExtractorService excelDataExtractorService;
     @Autowired
     private ExcelDataProcessorService excelDataProcessorService;
     @Autowired
