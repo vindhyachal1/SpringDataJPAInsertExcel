@@ -29,9 +29,9 @@ public class ExcelController {
     @GetMapping("/iterate")
     public String extractDataAndInsert() {
         Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel(excelFilePath);
-
-        for (int i = 0; i < extractedData.get("Column 1").size(); i++) {
-            Map<String, String> excelData = excelDataProcessorService.extractData(extractedData, i);
+        List<String> coIdList = extractedData.get("Column 1");
+        for (String custId : coIdList) {
+            Map<String, String> excelData = excelDataProcessorService.extractData(extractedData, coIdList.indexOf(custId));
             Timestamp cstDate = new Timestamp(System.currentTimeMillis());
             String sqlQuery = String.format(
                     "INSERT INTO data (co_id, phone_id, book_name, author_name, mobile_string, cst_date) VALUES " +
