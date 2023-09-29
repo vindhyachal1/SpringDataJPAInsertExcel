@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.reader.ExcelDataReaderService;
 import com.example.demo.service.ExcelDataProcessorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +23,12 @@ public class ExcelController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Value("${excel.file.path}")
+    private String excelFilePath;
+
     @GetMapping("/iterate")
     public String extractDataAndInsert() {
-        Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel("src/main/resources/books.xlsx");
+        Map<String, List<String>> extractedData = excelDataReaderService.extractDataFromExcel(excelFilePath);
 
         for (int i = 0; i < extractedData.get("Column 1").size(); i++) {
             Map<String, String> excelData = excelDataProcessorService.extractData(extractedData, i);
