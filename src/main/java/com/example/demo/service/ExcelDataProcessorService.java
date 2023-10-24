@@ -16,6 +16,7 @@ public class ExcelDataProcessorService {
         excelData.put("bookName", extractedData.get("Column 3").get(index));
         excelData.put("authorName", extractedData.get("Column 4").get(index));
         excelData.put("mobileString", extractedData.get("Column 9").get(index));
+        excelData.put("cst_date", extractedData.get("Column 10").get(index));
 
         return excelData;
     }
